@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  labels:
+    service: elasticsearch
+spec:
+  serviceName: es
+  # Update to desired number of nodes
+  replicas: 3
+  selector:
+    matchLabels:
+      service: elasticsearch
+  template:
+    metadata:
+      labels:
+        service: elasticsearch
+    spec:
+      terminationGracePeriodSeconds: 300
+      initContainers:
+        # Fix permissions on volume
+        - name: fix-volume-permissions
+          image: busybox
+          command:
+            - sh
+            - -c
+            - chown -R 1000:1000 /usr/share/elasticsearch/data
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+
+        # Increase the default vm.max_map_count to 262144
+        # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode
+        - name: increase-vm-max-map-count
+          image: busybox
+          command:
+            - sysctl
+            - -w
+            - vm.max_map_count=262144
+          securityContext:
+            privileged: true
+
+        # Increase the ulimit
+        # https://www.elastic.co/guide/en/elasticsearch/reference/current/setting-system-settings.html#ulimit
+        - name: increase-ulimit
+          image: busybox
+          command:
+            - sh
+            - -c
+            - ulimit -n 65536
+          securityContext:
+            privileged: true
+      containers:
+        - name: elasticsearch
+          # TODO: Update image
+          image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.6.0
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: tcp
+          # Adjust resources as needed
+          resources:
+            requests:
+              cpu: "1"
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 3Gi
+          env:
+            - name: cluster.name
+              value: es-dev
+            - name: node.name
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            # Tell Elastcsearch nodes where to connect to other nodes
+            - name: discovery.zen.ping.unicast.hosts
+              value: "elasticsearch-0.es.default.svc.cluster.local,elasticsearch-1.es.default.svc.cluster.local,elasticsearch-2.es.default.svc.cluster.local"
+            # Adjust Heap size as needed
+            - name: ES_JAVA_OPTS
+              value: -Xms1024m -Xmx1024m
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: elasticsearch-ssd
+        resources:
+          requests:
+            # Increase resources as required
+            storage: 10Gi

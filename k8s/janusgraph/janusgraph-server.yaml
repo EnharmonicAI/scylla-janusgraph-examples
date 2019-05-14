@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: janusgraph-server-deployment
+  labels:
+    app: janusgraph
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: janusgraph
+  template:
+    metadata:
+      labels:
+        app: janusgraph
+    spec:
+      containers:
+        - name: janusgraph
+          # TODO: Replace PROJECT placeholder for your deployment
+          image: gcr.io/[PROJECT]/janusgraph:0.3.1
+          env:
+            - name: JANUS_PROPS_TEMPLATE
+              value: cql-es
+              # TODO: Update hostname to point to JanusGraph IP
+            - name: janusgraph.storage.hostname
+              value: 10.138.0.3
+            - name: janusgraph.storage.cql.keyspace
+              value: graphdemo
+            - name: janusgraph.index.search.hostname
+              value: elasticsearch-0.es.default.svc.cluster.local,elasticsearch-1.es.default.svc.cluster.local,elasticsearch-2.es.default.svc.cluster.local
+          ports:
+            - containerPort: 8182

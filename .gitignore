@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info
+
+# MacOSX
+.DS_Store
+
+# Ansible
+*.retry
+scylla_install_new.yaml
+servers.ini

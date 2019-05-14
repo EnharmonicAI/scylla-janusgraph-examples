@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: janusgraph-gremlin-console
+  labels:
+    app: gremlin-console
+spec:
+  containers:
+    - name: janusgraph
+      # TODO: Replace PROJECT placeholder for your deployment
+      image: gcr.io/[PROJECT]/janusgraph:0.3.1
+      env:
+        - name: JANUS_PROPS_TEMPLATE
+          value: cql-es
+          # TODO: Update hostname to point to JanusGraph IP
+        - name: janusgraph.storage.hostname
+          value: 10.138.0.2
+        - name: janusgraph.storage.cql.keyspace
+          value: graphdemo
+        - name: janusgraph.index.search.hostname
+          value: elasticsearch-0.es.default.svc.cluster.local,elasticsearch-1.es.default.svc.cluster.local,elasticsearch-2.es.default.svc.cluster.local

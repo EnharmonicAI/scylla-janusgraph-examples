@@ -1,0 +1,117 @@
+vertices:
+  - vertex_label: Candidate
+    lookup_properties:
+      FilerCommitteeIdNumber: filerCommitteeIdNumber
+    other_properties:
+      CandidateName: name
+
+  - vertex_label: Contribution
+    lookup_properties:
+      TransactionId: transactionId
+    other_properties:
+      ContributionDate: contributionDate
+      ContributionAmount: amount
+      FormType: formType
+      ContributionType: contributionType
+      Itemized: itemized
+      FirstTimeDonor: firstTimeDonor
+      FirstTimeItemized: firstTimeItemized
+
+  - vertex_label: OrganizationContributor
+    lookup_properties:
+      ContributorOrganizationName: organizationName
+    other_properties: {}
+
+  - vertex_label: IndividualContributor
+    lookup_properties:
+      ContributorFirstName: firstName
+      ContributorLastName: lastName
+    other_properties:
+      ContributorMiddleName: middleName
+      ContributorPrefix: prefix
+      ContributorSuffix: suffix
+
+  - vertex_label: State
+    lookup_properties:
+      ContributorState: postalAbbreviation
+    other_properties: {}
+
+  - vertex_label: Zipcode
+    lookup_properties:
+      ContributorZip5digit: fiveDigit
+    other_properties:
+      ContributorZipOriginal: rawZip
+
+edges:
+  - edge_label: CONTRIBUTION_TO
+    out_vertex:
+      vertex_label: Contribution
+      lookup_properties:
+        TransactionId: transactionId
+    in_vertex:
+      vertex_label: Candidate
+      lookup_properties:
+        FilerCommitteeIdNumber: filerCommitteeIdNumber
+
+  - edge_label: CONTRIBUTED
+    out_vertex:
+      vertex_label: IndividualContributor
+      lookup_properties:
+        ContributorFirstName: firstName
+        ContributorLastName: lastName
+    in_vertex:
+      vertex_label: Contribution
+      lookup_properties:
+        TransactionId: transactionId
+
+  - edge_label: CONTRIBUTED
+    out_vertex:
+      vertex_label: OrganizationContributor
+      lookup_properties:
+        ContributorOrganizationName: organizationName
+    in_vertex:
+      vertex_label: Contribution
+      lookup_properties:
+        TransactionId: transactionId
+
+  - edge_label : STATE
+    out_vertex:
+      vertex_label: OrganizationContributor
+      lookup_properties:
+        ContributorOrganizationName: organizationName
+    in_vertex:
+      vertex_label: State
+      lookup_properties:
+        ContributorState: postalAbbreviation
+
+  - edge_label: STATE
+    out_vertex:
+      vertex_label: IndividualContributor
+      lookup_properties :
+        ContributorFirstName: firstName
+        ContributorLastName: lastName
+    in_vertex:
+      vertex_label: State
+      lookup_properties:
+        ContributorState: postalAbbreviation
+
+  - edge_label: ZIP
+    out_vertex:
+      vertex_label: OrganizationContributor
+      lookup_properties:
+        ContributorOrganizationName: organizationName
+    in_vertex:
+      vertex_label: Zipcode
+      lookup_properties:
+        ContributorZip5digit: fiveDigit
+
+  - edge_label: ZIP
+    out_vertex:
+      vertex_label: IndividualContributor
+      lookup_properties:
+        ContributorFirstName: firstName
+        ContributorLastName: lastName
+    in_vertex:
+      vertex_label: Zipcode
+      lookup_properties:
+        ContributorZip5digit: fiveDigit
