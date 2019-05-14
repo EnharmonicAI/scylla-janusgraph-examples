@@ -12,7 +12,7 @@ spec:
       env:
         - name: JANUS_PROPS_TEMPLATE
           value: cql-es
-          # TODO: Update hostname to point to JanusGraph IP
+          # TODO: Update hostname to point to Scylla IP
         - name: janusgraph.storage.hostname
           value: 10.138.0.2
         - name: janusgraph.storage.cql.keyspace

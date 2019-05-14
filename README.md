@@ -1,6 +1,6 @@
 # Scylla & JanusGraph Deployment Examples
 
-Short code examples to pair with the article _Powering a Graph Data System with Scylla + JanusGraph_.  See the article for the full walkthrough!
+Short code examples to pair with the article [Powering a Graph Data System with Scylla + JanusGraph](https://www.scylladb.com/2019/05/14/powering-a-graph-data-system-with-scylla-janusgraph/).  See the article for the full walkthrough!
 
 The 3 components of our graph data system are:
 * _Scylla_ - our storage backend, the ultimate place where our data gets stored
